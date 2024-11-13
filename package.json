@@ -10,7 +10,11 @@
   },
   "dependencies": {
     "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
     "axios": "latest",
     "supabase-js": "latest"
-  }
+  },
+  "devDependencies": {},
+  "license": "MIT"
 }
