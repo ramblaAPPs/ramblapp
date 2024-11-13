@@ -6,16 +6,18 @@ export default function Home() {
   const [post, setPost] = useState(null);
 
   // Función para buscar artistas por nombre
-  const handleSearch = async () => {
-    try {
-      const response = await fetch(`/api/searchArtist?query=${query}`);
-      const data = await response.json();
-      setArtists(data); // Ajustado para recibir directamente la lista de artistas
-    } catch (error) {
-      console.error('Error searching artist:', error);
-    }
-  };
+ const handleSearch = async () => {
+  try {
+    const response = await fetch(`/api/searchArtist?query=${query}`);
+    const data = await response.json();
 
+    // Verificar si data es un array; si no, asigna un array vacío
+    setArtists(Array.isArray(data) ? data : []);
+  } catch (error) {
+    console.error('Error searching artist:', error);
+    setArtists([]); // Asegúrate de que artistas sea un array en caso de error
+  }
+};
   // Función para obtener la última publicación de un artista
   const handleFetchPost = async (artistId) => {
     try {
