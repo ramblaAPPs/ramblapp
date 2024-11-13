@@ -47,23 +47,27 @@ export default async function handler(req, res) {
     // Obtener la última publicación del artista en Spotify
     const latestPost = await fetchLatestPost(artistId, token);
 
-    // Verificar que la publicación y las imágenes existan antes de acceder a ellas
-    if (!latestPost || !latestPost.images || latestPost.images.length === 0) {
-      return res.status(404).json({ message: 'No recent post with images found' });
+    if (!latestPost) {
+      return res.status(404).json({ message: 'No posts found' });
     }
 
-    // Guardar el resultado en Supabase
-    await savePostToDatabase({
-      artist_id: artistId,
-      album_name: latestPost.name,
-      release_date: latestPost.release_date,
-      image_url: latestPost.images[0].url, // Acceder solo si existe
-    });
-
-    // Responder con la última publicación
+    // Responder al cliente inmediatamente con la última publicación
     res.status(200).json(latestPost);
+
+    // Intentar guardar en la base de datos, pero no bloquear la respuesta al cliente si falla
+    try {
+      await savePostToDatabase({
+        artist_id: artistId,
+        album_name: latestPost.name,
+        release_date: latestPost.release_date,
+        image_url: latestPost.images && latestPost.images.length > 0 ? latestPost.images[0].url : null,
+      });
+    } catch (dbError) {
+      console.error('Error saving post to database:', dbError);
+      // No responder con error al cliente; el error se registra en la consola
+    }
   } catch (error) {
-    console.error('Error fetching or saving latest post:', error);
-    res.status(500).json({ error: 'Error fetching or saving the latest post' });
+    console.error('Error fetching latest post:', error);
+    res.status(500).json({ error: 'Error fetching the latest post' });
   }
 }
