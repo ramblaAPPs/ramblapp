@@ -20,11 +20,12 @@ export default function Home() {
   };
 
   // Función para obtener la última publicación de un artista
-  const handleFetchPost = async (artistId) => {
+  const handleFetchPost = async (artistId, artistName) => {
     try {
-      const response = await fetch(`/api/getLatestPost?artistId=${artistId}`);
+      // Enviar artistId y artistName a la API
+      const response = await fetch(`/api/getLatestPost?artistId=${artistId}&artistName=${encodeURIComponent(artistName)}`);
       const data = await response.json();
-      setPost(data);
+      setPost(data.latestPost); // Ajusta según el formato de los datos
     } catch (error) {
       console.error('Error fetching post:', error);
     }
@@ -47,7 +48,7 @@ export default function Home() {
         {artists.map((artist) => (
           <div key={artist.id} style={{ marginTop: '10px' }}>
             <p>{artist.name}</p>
-            <button onClick={() => handleFetchPost(artist.id)}>
+            <button onClick={() => handleFetchPost(artist.id, artist.name)}>
               Get Latest Post
             </button>
           </div>
@@ -55,18 +56,18 @@ export default function Home() {
       </div>
 
       {/* Mostrar la última publicación */}
-     {post && (
-  <div style={{ marginTop: '20px' }}>
-    <h2>Última Publicación</h2>
-    <p>Título: {post.name}</p>
-    <p>Tipo: {post.album_type === 'single' ? 'Canción' : post.album_type === 'album' ? 'Álbum' : 'EP'}</p>
-    <a href={post.external_urls?.spotify || '#'} target="_blank" rel="noopener noreferrer">
-      Ver en Spotify
-    </a>
-    <p>Fecha de Lanzamiento: {post.release_date}</p>
-    <img src={post.images?.[0]?.url || ''} alt={post.name} width="200" />
-  </div>
-)}
+      {post && (
+        <div style={{ marginTop: '20px' }}>
+          <h2>Última Publicación</h2>
+          <p>Título: {post.name}</p>
+          <p>Tipo: {post.album_type === 'single' ? 'Canción' : post.album_type === 'album' ? 'Álbum' : 'EP'}</p>
+          <a href={post.external_urls?.spotify || '#'} target="_blank" rel="noopener noreferrer">
+            Ver en Spotify
+          </a>
+          <p>Fecha de Lanzamiento: {post.release_date}</p>
+          <img src={post.images?.[0]?.url || ''} alt={post.name} width="200" />
+        </div>
+      )}
     </div>
   );
 }
