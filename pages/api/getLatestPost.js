@@ -29,18 +29,18 @@ export default async function handler(req, res) {
 }
 */
 
-import { getSpotifyToken, fetchLatestPost } from '../../lib/spotify';
 import { createClient } from '@supabase/supabase-js';
+import { getSpotifyToken, fetchLatestPost } from '../../lib/spotify';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default async function handler(req, res) {
-  const { artistId } = req.query;
+  const { artistId, artistName } = req.query;
 
-  if (!artistId) {
-    return res.status(400).json({ error: 'Artist ID is required' });
+  if (!artistId || !artistName) {
+    return res.status(400).json({ error: 'Artist ID and Artist Name are required' });
   }
 
   try {
@@ -58,6 +58,7 @@ export default async function handler(req, res) {
     const { name, album_type, release_date, external_urls, images } = latestPost;
     const dataToInsert = {
       artist_id: artistId,
+      artist_name: artistName, // Añadimos el nombre del artista
       title: name,
       type: album_type === 'single' ? 'Canción' : album_type === 'album' ? 'Álbum' : 'EP',
       release_date: release_date,
@@ -75,7 +76,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Error inserting data into database' });
     }
 
-    // Responder con la última publicación y la confirmación de inserción
+    // Responder con la última publicación
     res.status(200).json({ latestPost, insertedData: data });
   } catch (error) {
     console.error('Error fetching latest post:', error);
