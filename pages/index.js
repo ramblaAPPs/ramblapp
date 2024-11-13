@@ -10,8 +10,6 @@ export default function Home() {
     try {
       const response = await fetch(`/api/searchArtist?query=${query}`);
       const data = await response.json();
-
-      // Verificar si data es un array; si no, asigna un array vacío
       setArtists(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error searching artist:', error);
@@ -22,10 +20,9 @@ export default function Home() {
   // Función para obtener la última publicación de un artista
   const handleFetchPost = async (artistId, artistName) => {
     try {
-      // Enviar artistId y artistName a la API
       const response = await fetch(`/api/getLatestPost?artistId=${artistId}&artistName=${encodeURIComponent(artistName)}`);
       const data = await response.json();
-      setPost(data.latestPost); // Ajusta según el formato de los datos
+      setPost(data.latestPost);
     } catch (error) {
       console.error('Error fetching post:', error);
     }
@@ -39,11 +36,10 @@ export default function Home() {
         placeholder="Search for an artist"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && handleSearch()} // Ejecuta búsqueda al presionar "Enter"
+        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
       />
       <button onClick={handleSearch}>Search</button>
 
-      {/* Mostrar resultados de búsqueda */}
       <div>
         {artists.map((artist) => (
           <div key={artist.id} style={{ marginTop: '10px' }}>
@@ -55,12 +51,29 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Mostrar la última publicación */}
       {post && (
         <div style={{ marginTop: '20px' }}>
           <h2>Última Publicación</h2>
           <p>Título: {post.name}</p>
           <p>Tipo: {post.album_type === 'single' ? 'Canción' : post.album_type === 'album' ? 'Álbum' : 'EP'}</p>
+          
+          {post.album_type === 'single' && post.tracks?.items.length === 1 && (
+            <p>Duración: {(post.tracks.items[0].duration_ms / 60000).toFixed(2)} min</p>
+          )}
+
+          {post.album_type !== 'single' && post.tracks?.items && (
+            <div>
+              <h3>Listado de canciones:</h3>
+              <ul>
+                {post.tracks.items.map((track) => (
+                  <li key={track.id}>
+                    {track.track_number}. {track.name} - {(track.duration_ms / 60000).toFixed(2)} min
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <a href={post.external_urls?.spotify || '#'} target="_blank" rel="noopener noreferrer">
             Ver en Spotify
           </a>
