@@ -15,6 +15,11 @@ export default function Home() {
 
     try {
       const token = await getSpotifyToken();
+      if (!token) {
+        console.error("No token received from Spotify");
+        return;
+      }
+      
       const artistResults = await searchArtists(query, token);
       setArtists(artistResults);
     } catch (error) {
@@ -31,6 +36,11 @@ export default function Home() {
 
     try {
       const token = await getSpotifyToken();
+      if (!token) {
+        console.error("No token received from Spotify");
+        return;
+      }
+      
       const latestPostData = await fetchLatestPost(artistId, token);
       setLatestPost(latestPostData);
     } catch (error) {
@@ -54,7 +64,7 @@ export default function Home() {
       {loading && <p>Loading...</p>}
 
       <div>
-        {artists.length > 0 && (
+        {artists && artists.length > 0 && (
           <div>
             <h2>Artists</h2>
             <ul>
