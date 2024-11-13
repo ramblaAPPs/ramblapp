@@ -1,4 +1,4 @@
-/*
+/* GONZALO - funciona sin enviar a base de datos -
 
 import { getSpotifyToken, fetchLatestPost } from '../../lib/spotify';
 
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
 */
 
 import { getSpotifyToken, fetchLatestPost } from '../../lib/spotify';
-import { savePostToDatabase } from '../../lib/supabase'; // Importa la función para guardar en Supabase
+import { savePostToDatabase } from '../../lib/supabase';
 
 export default async function handler(req, res) {
   const { artistId } = req.query;
@@ -47,8 +47,9 @@ export default async function handler(req, res) {
     // Obtener la última publicación del artista en Spotify
     const latestPost = await fetchLatestPost(artistId, token);
 
-    if (!latestPost) {
-      return res.status(404).json({ message: 'No posts found' });
+    // Verificar que la publicación y las imágenes existan antes de acceder a ellas
+    if (!latestPost || !latestPost.images || latestPost.images.length === 0) {
+      return res.status(404).json({ message: 'No recent post with images found' });
     }
 
     // Guardar el resultado en Supabase
@@ -56,7 +57,7 @@ export default async function handler(req, res) {
       artist_id: artistId,
       album_name: latestPost.name,
       release_date: latestPost.release_date,
-      image_url: latestPost.images[0].url,
+      image_url: latestPost.images[0].url, // Acceder solo si existe
     });
 
     // Responder con la última publicación
