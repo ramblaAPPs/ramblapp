@@ -55,14 +55,18 @@ export default function Home() {
       </div>
 
       {/* Mostrar la última publicación */}
-      {post && (
-        <div style={{ marginTop: '20px' }}>
-          <h2>Latest Post</h2>
-          <p>Album Name: {post.name}</p>
-          <p>Release Date: {post.release_date}</p>
-          <img src={post.images?.[0]?.url || ''} alt="Album cover" width="200" />
-        </div>
-      )}
+     {post && (
+  <div style={{ marginTop: '20px' }}>
+    <h2>Última Publicación</h2>
+    <p>Título: {post.name}</p>
+    <p>Tipo: {post.album_type === 'single' ? 'Canción' : post.album_type === 'album' ? 'Álbum' : 'EP'}</p>
+    <a href={post.external_urls?.spotify || '#'} target="_blank" rel="noopener noreferrer">
+      Ver en Spotify
+    </a>
+    <p>Fecha de Lanzamiento: {post.release_date}</p>
+    <img src={post.images?.[0]?.url || ''} alt={post.name} width="200" />
+  </div>
+)}
     </div>
   );
 }
