@@ -42,6 +42,13 @@ export default function Home() {
     }
   };
 
+  // Función para cerrar el modal cuando se hace clic fuera del contenido
+  const handleOutsideClick = (e) => {
+    if (e.target.id === 'modal-background') {
+      setShowModal(false);
+    }
+  };
+
   return (
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
       <h1>Spotify Latest Post Prototype</h1>
@@ -59,8 +66,8 @@ export default function Home() {
         {artists.map((artist) => (
           <div key={artist.id} style={{ marginTop: '10px' }}>
             <p>{artist.name}</p>
-            <button onClick={() => handleFetchPost(artist.id, artist.name)}>Get Latest Post</button>
-            <button onClick={() => handleViewResults(artist.id)}>View All Results</button>
+            <button onClick={() => handleFetchPost(artist.id, artist.name)}>Última Publicación</button>
+            <button onClick={() => handleViewResults(artist.id)}>Histórico BD</button>
           </div>
         ))}
       </div>
@@ -77,27 +84,41 @@ export default function Home() {
         </div>
       )}
 
-      {/* Modal para mostrar los resultados del artista */}
-      {showModal && (
-        <div style={{
-          position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          backgroundColor: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)'
-        }}>
-          <h3>Resultados Guardados para el Artista</h3>
-          <button onClick={() => setShowModal(false)}>Cerrar</button>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            {artistResults.map(result => (
-              <li key={result.id} style={{ margin: '10px 0', borderBottom: '1px solid #ccc' }}>
-                <p>Fecha de Creación: {new Date(result.created_at).toLocaleString()}</p>
-                <p>Artista: {result.artist_name}</p>
-                <p>Título: {result.title}</p>
-                <p>Tipo: {result.type}</p>
-                <p>Fecha de Lanzamiento: {result.release_date}</p>
-                <a href={result.url} target="_blank" rel="noopener noreferrer">Ver en Spotify</a>
-              </li>
-            ))}
-          </ul>
-        </div>
+     {showModal && (
+  <div
+    id="modal-background"
+    onClick={handleOutsideClick}
+    style={{
+      position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center'
+    }}
+  >
+    <div style={{
+      backgroundColor: 'white', padding: '20px', borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', width: '80%', maxWidth: '500px'
+    }}>
+      <h3>Resultados Guardados para el Artista</h3>
+      <button onClick={() => setShowModal(false)}>Cerrar</button>
+
+      {/* Verificar si hay resultados; si no, mostrar un mensaje */}
+      {artistResults.length === 0 ? (
+        <p>No tenemos nada almacenado aún de este artista</p>
+      ) : (
+        <ul style={{ listStyle: 'none', padding: 0 }}>
+          {artistResults.map(result => (
+            <li key={result.id} style={{ margin: '10px 0', borderBottom: '1px solid #ccc' }}>
+              <p>Fecha de Creación: {new Date(result.created_at).toLocaleString()}</p>
+              <p>Artista: {result.artist_name}</p>
+              <p>Título: {result.title}</p>
+              <p>Tipo: {result.type}</p>
+              <p>Fecha de Lanzamiento: {result.release_date}</p>
+              <a href={result.url} target="_blank" rel="noopener noreferrer">Ver en Spotify</a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
       )}
     </div>
   );
