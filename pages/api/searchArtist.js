@@ -6,11 +6,9 @@ export default async function handler(req, res) {
   if (!query) {
     return res.status(400).json({ error: 'Query is required' });
   }
-  try {
-    // Obtener token de autenticación
-    const token = await getSpotifyToken();
 
-    // Hacer la búsqueda en la API de Spotify
+  try {
+    const token = await getSpotifyToken();
     const response = await fetch(
       `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=artist&limit=5`,
       {
@@ -19,10 +17,18 @@ export default async function handler(req, res) {
         },
       }
     );
+
+    if (!response.ok) {
+      console.error('Error fetching artists:', response.statusText);
+      return res.status(500).json([]);
+    }
+
     const data = await response.json();
-    res.status(200).json(data);
+    const artists = data.artists?.items || []; // Asegúrate de devolver un array
+
+    res.status(200).json(artists);
   } catch (error) {
     console.error('Error searching for artist:', error);
-    res.status(500).json({ error: 'Error searching for artist' });
+    res.status(500).json([]);
   }
 }
