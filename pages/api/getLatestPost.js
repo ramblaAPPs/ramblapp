@@ -80,18 +80,18 @@ export default async function handler(req, res) {
 
     const { name, album_type, release_date, external_urls, images, id, tracks } = latestPost;
 
-    // Preparar datos adicionales
+    // Preparar datos adicionales con verificaciones
     let track_duration = null;
     let album_title = null;
     let track_list = null;
 
-    if (album_type === 'single' && tracks.items.length === 1) {
+    if (album_type === 'single' && tracks?.items?.length === 1) {
       // Si es una canción única (single), obtener la duración
       track_duration = tracks.items[0].duration_ms;
-      album_title = name; // Almacena el título como album_title
-    } else if (album_type === 'album' || album_type === 'compilation') {
+      album_title = name;
+    } else if ((album_type === 'album' || album_type === 'compilation') && tracks?.items) {
       // Si es un álbum o compilación, obtener el listado de canciones
-      track_list = tracks.items.map((track, index) => ({
+      track_list = tracks.items.map((track) => ({
         track_number: track.track_number,
         track_name: track.name,
         duration: track.duration_ms,
@@ -125,4 +125,3 @@ export default async function handler(req, res) {
     res.status(500).json({ error: 'Error fetching the latest post' });
   }
 }
-
