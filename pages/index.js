@@ -45,6 +45,7 @@ export default function Home() {
         onChange={(e) => setQuery(e.target.value)}
         onKeyPress={handleKeyPress} // Llama a la función cuando se presiona "Enter"
       />
+      <button onClick={handleSearch}>Search</button> {/* Botón de búsqueda */}
 
       {/* Mostrar resultados de búsqueda */}
       <div>
@@ -64,7 +65,12 @@ export default function Home() {
           <h2>Latest Post</h2>
           <p>Album Name: {post.name}</p>
           <p>Release Date: {post.release_date}</p>
-          <img src={post.images[0].url} alt="Album cover" width="200" />
+          {/* Verificar que las imágenes existan antes de mostrar */}
+          {post.images && post.images.length > 0 ? (
+            <img src={post.images[0].url} alt="Album cover" width="200" />
+          ) : (
+            <p>No cover image available</p>
+          )}
         </div>
       )}
     </div>
