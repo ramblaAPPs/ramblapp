@@ -13,7 +13,7 @@
   "react": "latest",
   "react-dom": "latest",
   "axios": "latest",
-  "supabase-js": "2.6.7"
+  "supabase-js"
 },
   "devDependencies": {},
   "license": "MIT"
