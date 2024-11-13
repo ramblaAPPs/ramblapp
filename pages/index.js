@@ -1,10 +1,23 @@
 import { useState } from 'react';
 
 export default function Home() {
-  const [artistId, setArtistId] = useState('');
+  const [query, setQuery] = useState('');
+  const [artists, setArtists] = useState([]);
   const [post, setPost] = useState(null);
 
-  const handleFetchPost = async () => {
+  // Función para buscar artistas por nombre
+  const handleSearch = async () => {
+    try {
+      const response = await fetch(`/api/searchArtist?query=${query}`);
+      const data = await response.json();
+      setArtists(data.artists.items); // Guardar resultados de búsqueda
+    } catch (error) {
+      console.error('Error searching artist:', error);
+    }
+  };
+
+  // Función para obtener la última publicación de un artista
+  const handleFetchPost = async (artistId) => {
     try {
       const response = await fetch(`/api/getLatestPost?artistId=${artistId}`);
       const data = await response.json();
@@ -19,12 +32,25 @@ export default function Home() {
       <h1>Spotify Latest Post Prototype</h1>
       <input
         type="text"
-        placeholder="Enter Artist ID"
-        value={artistId}
-        onChange={(e) => setArtistId(e.target.value)}
+        placeholder="Search for an artist"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
       />
-      <button onClick={handleFetchPost}>Fetch Latest Post</button>
+      <button onClick={handleSearch}>Search</button>
 
+      {/* Mostrar resultados de búsqueda */}
+      <div>
+        {artists.map((artist) => (
+          <div key={artist.id} style={{ marginTop: '10px' }}>
+            <p>{artist.name}</p>
+            <button onClick={() => handleFetchPost(artist.id)}>
+              Get Latest Post
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Mostrar la última publicación */}
       {post && (
         <div style={{ marginTop: '20px' }}>
           <h2>Latest Post</h2>
