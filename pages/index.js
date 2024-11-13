@@ -7,6 +7,7 @@ export default function Home() {
 
   // Función para buscar artistas por nombre
   const handleSearch = async () => {
+    if (query.trim() === '') return; // Evita buscar si el campo está vacío
     try {
       const response = await fetch(`/api/searchArtist?query=${query}`);
       const data = await response.json();
@@ -27,6 +28,13 @@ export default function Home() {
     }
   };
 
+  // Manejar la tecla "Enter" para cargar los resultados de búsqueda
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
       <h1>Spotify Latest Post Prototype</h1>
@@ -35,8 +43,8 @@ export default function Home() {
         placeholder="Search for an artist"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onKeyPress={handleKeyPress} // Llama a la función cuando se presiona "Enter"
       />
-      <button onClick={handleSearch}>Search</button>
 
       {/* Mostrar resultados de búsqueda */}
       <div>
