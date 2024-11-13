@@ -60,19 +60,26 @@ export default function Home() {
       </div>
 
       {/* Mostrar la última publicación */}
-      {post && (
-        <div style={{ marginTop: '20px' }}>
-          <h2>Latest Post</h2>
-          <p>Album Name: {post.name}</p>
-          <p>Release Date: {post.release_date}</p>
-          {/* Verificar que las imágenes existan antes de mostrar */}
-          {post.images && post.images.length > 0 ? (
-            <img src={post.images[0].url} alt="Album cover" width="200" />
-          ) : (
-            <p>No cover image available</p>
-          )}
-        </div>
-      )}
+     // Mostrar el último lanzamiento y las canciones si están presentes
+{latestPost && (
+  <div>
+    <h2>{latestPost.name}</h2>
+    <p>Release Date: {latestPost.release_date}</p>
+    <img src={latestPost.images[0].url} alt={latestPost.name} width="200" />
+
+    {latestPost.tracks && (
+      <div>
+        <h3>Tracks:</h3>
+        <ul>
+          {latestPost.tracks.map((track) => (
+            <li key={track.id}>{track.name}</li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+)}
+
     </div>
   );
 }
