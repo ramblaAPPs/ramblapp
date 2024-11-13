@@ -1,0 +1,16 @@
+{
+  "name": "spotify-latest-post-prototype",
+  "version": "1.0.0",
+  "description": "Prototype for fetching latest Spotify post",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "latest",
+    "axios": "latest",
+    "supabase-js": "latest"
+  }
+}
