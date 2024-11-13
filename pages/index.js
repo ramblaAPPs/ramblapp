@@ -1,9 +1,42 @@
+import { useState } from 'react';
 import { getSpotifyToken, fetchLatestPost } from '../lib/spotify';
 
-export default function Home({ latestPost }) {
+export default function Home() {
+  const [artistId, setArtistId] = useState('');
+  const [latestPost, setLatestPost] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSearch = async () => {
+    setLoading(true);
+    setLatestPost(null);
+
+    try {
+      // Obtener token de Spotify
+      const token = await getSpotifyToken();
+      // Obtener el último lanzamiento del artista
+      const latestPostData = await fetchLatestPost(artistId, token);
+      setLatestPost(latestPostData);
+    } catch (error) {
+      console.error('Error fetching latest post:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <>
-      {latestPost ? (
+    <div>
+      <h1>Spotify Latest Post Prototype</h1>
+      <input
+        type="text"
+        placeholder="Enter artist ID"
+        value={artistId}
+        onChange={(e) => setArtistId(e.target.value)}
+      />
+      <button onClick={handleSearch}>Search</button>
+
+      {loading && <p>Loading...</p>}
+
+      {latestPost && (
         <div>
           <h2>{latestPost.name}</h2>
           <p>Release Date: {latestPost.release_date}</p>
@@ -20,31 +53,7 @@ export default function Home({ latestPost }) {
             </div>
           )}
         </div>
-      ) : (
-        <p>Loading...</p>
       )}
-    </>
+    </div>
   );
-}
-
-// Función para obtener los datos en el servidor
-export async function getServerSideProps() {
-  try {
-    const token = await getSpotifyToken();
-    const artistId = 'tu_artist_id'; // Reemplaza esto con el ID del artista deseado
-    const latestPost = await fetchLatestPost(artistId, token);
-
-    return {
-      props: {
-        latestPost: latestPost || null,
-      },
-    };
-  } catch (error) {
-    console.error('Error fetching latest post:', error);
-    return {
-      props: {
-        latestPost: null,
-      },
-    };
-  }
 }
