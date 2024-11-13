@@ -44,35 +44,29 @@ export default async function handler(req, res) {
     // Obtener token de autenticación
     const token = await getSpotifyToken();
 
-    // Obtener la última publicación del artista en Spotify
-    const latestPost = await fetchLatestPost(artistId, token);
+    // Obtener el último lanzamiento del artista en Spotify
+    const latestRelease = await fetchLatestPost(artistId, token);
 
-    if (!latestPost) {
-      return res.status(404).json({ message: 'No posts found' });
+    if (!latestRelease) {
+      return res.status(404).json({ message: 'No releases found' });
     }
 
-    // Prepara los datos para guardar en la base de datos
-    const postData = {
-      artist_id: artistId,
-      album_name: latestPost.name,
-      release_date: latestPost.release_date,
-      image_url: latestPost.images && latestPost.images.length > 0 ? latestPost.images[0].url : null,
-    };
+    // Responder al cliente inmediatamente con el último lanzamiento y sus canciones
+    res.status(200).json(latestRelease);
 
-    console.log("Datos que se enviarán a la base de datos:", postData); // Log para verificación
-
-    // Responder al cliente inmediatamente con la última publicación
-    res.status(200).json(latestPost);
-
-    // Intentar guardar en la base de datos, pero no bloquear la respuesta al cliente si falla
+    // Intentar guardar en la base de datos sin bloquear la respuesta
     try {
-      await savePostToDatabase(postData);
+      await savePostToDatabase({
+        artist_id: artistId,
+        album_name: latestRelease.name,
+        release_date: latestRelease.release_date,
+        image_url: latestRelease.images && latestRelease.images.length > 0 ? latestRelease.images[0].url : null,
+      });
     } catch (dbError) {
       console.error('Error saving post to database:', dbError);
-      // No responder con error al cliente; el error se registra en la consola
     }
   } catch (error) {
-    console.error('Error fetching latest post:', error);
-    res.status(500).json({ error: 'Error fetching the latest post' });
+    console.error('Error fetching latest release:', error);
+    res.status(500).json({ error: 'Error fetching the latest release' });
   }
 }
