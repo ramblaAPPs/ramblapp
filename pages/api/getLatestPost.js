@@ -34,20 +34,25 @@ export default async function handler(req, res) {
       image_url: images[0]?.url || null,
     };
 
-    // Insertar los datos en Supabase
-    const { data, error } = await supabase
-      .from('search_results')
-      .insert([dataToInsert]);
+    try {
+      // Insertar los datos en Supabase
+      const { data, error } = await supabase
+        .from('search_results')
+        .insert([dataToInsert]);
 
-    if (error) {
-      console.error('Error inserting data into Supabase:', error);
-      return res.status(500).json({ error: 'Error inserting data into database' });
+      if (error) {
+        console.error('Error inserting data into Supabase:', error);
+        return res.status(500).json({ error: 'Error inserting data into database', details: error });
+      }
+
+      // Responder con la última publicación
+      res.status(200).json({ latestPost, insertedData: data });
+    } catch (supabaseError) {
+      console.error('Supabase insertion error:', supabaseError);
+      res.status(500).json({ error: 'Error with Supabase insertion', details: supabaseError });
     }
-
-    // Responder con la última publicación
-    res.status(200).json({ latestPost, insertedData: data });
   } catch (error) {
     console.error('Error fetching latest post:', error);
-    res.status(500).json({ error: 'Error fetching the latest post' });
+    res.status(500).json({ error: 'Error fetching the latest post', details: error });
   }
 }
