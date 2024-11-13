@@ -1,106 +1,64 @@
 import { useState } from 'react';
-import { getSpotifyToken, searchArtists, fetchLatestPost } from '../lib/spotify';
 
 export default function Home() {
   const [query, setQuery] = useState('');
   const [artists, setArtists] = useState([]);
-  const [selectedArtist, setSelectedArtist] = useState(null);
-  const [latestPost, setLatestPost] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [post, setPost] = useState(null);
 
-  // Función para buscar artistas
-  const handleArtistSearch = async () => {
-    setLoading(true);
-    setArtists([]);
-    setLatestPost(null);
-
+  // Función para buscar artistas por nombre
+  const handleSearch = async () => {
     try {
-      const token = await getSpotifyToken();
-      if (!token) {
-        console.error("No token received from Spotify");
-        setLoading(false);
-        return;
-      }
-
-      const artistResults = await searchArtists(query, token);
-      setArtists(artistResults);
+      const response = await fetch(`/api/searchArtist?query=${query}`);
+      const data = await response.json();
+      setArtists(data.artists.items); // Guardar resultados de búsqueda
     } catch (error) {
-      console.error('Error fetching artists:', error);
-    } finally {
-      setLoading(false);
+      console.error('Error searching artist:', error);
     }
   };
 
-  // Función para seleccionar un artista y obtener su último lanzamiento
-  const handleArtistSelect = async (artistId) => {
-    setLoading(true);
-    setLatestPost(null);
-    setSelectedArtist(artistId);
-
+  // Función para obtener la última publicación de un artista
+  const handleFetchPost = async (artistId) => {
     try {
-      const token = await getSpotifyToken();
-      if (!token) {
-        console.error("No token received from Spotify");
-        setLoading(false);
-        return;
-      }
-
-      const latestPostData = await fetchLatestPost(artistId, token);
-      setLatestPost(latestPostData);
+      const response = await fetch(`/api/getLatestPost?artistId=${artistId}`);
+      const data = await response.json();
+      setPost(data);
     } catch (error) {
-      console.error('Error fetching latest post:', error);
-    } finally {
-      setLoading(false);
+      console.error('Error fetching post:', error);
     }
   };
 
   return (
-    <div>
-      <h1>Spotify Artist Search and Latest Release</h1>
+    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <h1>Spotify Latest Post Prototype</h1>
       <input
         type="text"
-        placeholder="Enter artist name"
+        placeholder="Search for an artist"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && handleArtistSearch()}
       />
-      <button onClick={handleArtistSearch}>Search Artists</button>
+      <button onClick={handleSearch}>Search</button>
 
-      {loading && <p>Loading...</p>}
-
+      {/* Mostrar resultados de búsqueda */}
       <div>
-        {artists && artists.length > 0 && (
-          <div>
-            <h2>Artists</h2>
-            <ul>
-              {artists.map((artist) => (
-                <li key={artist.id} onClick={() => handleArtistSelect(artist.id)}>
-                  {artist.name}
-                </li>
-              ))}
-            </ul>
+        {artists.map((artist) => (
+          <div key={artist.id} style={{ marginTop: '10px' }}>
+            <p>{artist.name}</p>
+            <button onClick={() => handleFetchPost(artist.id)}>
+              Get Latest Post
+            </button>
           </div>
-        )}
-
-        {latestPost && (
-          <div>
-            <h2>{latestPost.name}</h2>
-            <p>Release Date: {latestPost.release_date}</p>
-            <img src={latestPost.images[0]?.url} alt={latestPost.name} width="200" />
-
-            {latestPost.tracks && (
-              <div>
-                <h3>Tracks:</h3>
-                <ul>
-                  {latestPost.tracks.map((track) => (
-                    <li key={track.id}>{track.name}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
+        ))}
       </div>
+
+      {/* Mostrar la última publicación */}
+      {post && (
+        <div style={{ marginTop: '20px' }}>
+          <h2>Latest Post</h2>
+          <p>Album Name: {post.name}</p>
+          <p>Release Date: {post.release_date}</p>
+          <img src={post.images[0].url} alt="Album cover" width="200" />
+        </div>
+      )}
     </div>
   );
 }
