@@ -51,17 +51,22 @@ export default async function handler(req, res) {
       return res.status(404).json({ message: 'No posts found' });
     }
 
+    // Prepara los datos para guardar en la base de datos
+    const postData = {
+      artist_id: artistId,
+      album_name: latestPost.name,
+      release_date: latestPost.release_date,
+      image_url: latestPost.images && latestPost.images.length > 0 ? latestPost.images[0].url : null,
+    };
+
+    console.log("Datos que se enviarán a la base de datos:", postData); // Log para verificación
+
     // Responder al cliente inmediatamente con la última publicación
     res.status(200).json(latestPost);
 
     // Intentar guardar en la base de datos, pero no bloquear la respuesta al cliente si falla
     try {
-      await savePostToDatabase({
-        artist_id: artistId,
-        album_name: latestPost.name,
-        release_date: latestPost.release_date,
-        image_url: latestPost.images && latestPost.images.length > 0 ? latestPost.images[0].url : null,
-      });
+      await savePostToDatabase(postData);
     } catch (dbError) {
       console.error('Error saving post to database:', dbError);
       // No responder con error al cliente; el error se registra en la consola
