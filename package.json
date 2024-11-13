@@ -9,12 +9,12 @@
     "start": "next start"
   },
   "dependencies": {
-    "next": "latest",
-    "react": "latest",
-    "react-dom": "latest",
-    "axios": "latest",
-    "supabase-js": "latest"
-  },
+  "next": "latest",
+  "react": "latest",
+  "react-dom": "latest",
+  "axios": "latest",
+  "supabase-js": "2.8.0"
+},
   "devDependencies": {},
   "license": "MIT"
 }
