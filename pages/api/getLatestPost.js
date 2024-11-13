@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+/*import { createClient } from '@supabase/supabase-js';
 import { getSpotifyToken, fetchLatestPost } from '../../lib/spotify';
 
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -54,5 +54,33 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Error fetching latest post:', error);
     res.status(500).json({ error: 'Error fetching the latest post', details: error });
+  }
+}
+*/
+
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+export default async function handler(req, res) {
+  try {
+    // Realizar una consulta simple para verificar la conexión
+    const { data, error } = await supabase
+      .from('search_results')
+      .select('*')
+      .limit(1);
+
+    if (error) {
+      console.error('Error connecting to Supabase:', error);
+      return res.status(500).json({ error: 'Error connecting to Supabase' });
+    }
+
+    // Si la consulta es exitosa, devolver el resultado
+    res.status(200).json({ message: 'Connection to Supabase successful', data });
+  } catch (error) {
+    console.error('Error in connection test:', error);
+    res.status(500).json({ error: 'Error testing connection to Supabase' });
   }
 }
