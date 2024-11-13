@@ -10,7 +10,7 @@ export default function Home() {
     try {
       const response = await fetch(`/api/searchArtist?query=${query}`);
       const data = await response.json();
-      setArtists(data.artists.items); // Guardar resultados de búsqueda
+      setArtists(data); // Ajustado para recibir directamente la lista de artistas
     } catch (error) {
       console.error('Error searching artist:', error);
     }
@@ -56,7 +56,7 @@ export default function Home() {
           <h2>Latest Post</h2>
           <p>Album Name: {post.name}</p>
           <p>Release Date: {post.release_date}</p>
-          <img src={post.images[0].url} alt="Album cover" width="200" />
+          <img src={post.images?.[0]?.url || ''} alt="Album cover" width="200" />
         </div>
       )}
     </div>
