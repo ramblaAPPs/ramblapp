@@ -8,6 +8,7 @@ export default function Home() {
   const [latestPost, setLatestPost] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Función para buscar artistas
   const handleArtistSearch = async () => {
     setLoading(true);
     setArtists([]);
@@ -17,9 +18,10 @@ export default function Home() {
       const token = await getSpotifyToken();
       if (!token) {
         console.error("No token received from Spotify");
+        setLoading(false);
         return;
       }
-      
+
       const artistResults = await searchArtists(query, token);
       setArtists(artistResults);
     } catch (error) {
@@ -29,6 +31,7 @@ export default function Home() {
     }
   };
 
+  // Función para seleccionar un artista y obtener su último lanzamiento
   const handleArtistSelect = async (artistId) => {
     setLoading(true);
     setLatestPost(null);
@@ -38,9 +41,10 @@ export default function Home() {
       const token = await getSpotifyToken();
       if (!token) {
         console.error("No token received from Spotify");
+        setLoading(false);
         return;
       }
-      
+
       const latestPostData = await fetchLatestPost(artistId, token);
       setLatestPost(latestPostData);
     } catch (error) {
@@ -58,6 +62,7 @@ export default function Home() {
         placeholder="Enter artist name"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && handleArtistSearch()}
       />
       <button onClick={handleArtistSearch}>Search Artists</button>
 
