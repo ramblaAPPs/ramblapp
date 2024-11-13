@@ -85,40 +85,41 @@ export default function Home() {
       )}
 
      {showModal && (
-  <div
-    id="modal-background"
-    onClick={handleOutsideClick}
-    style={{
-      position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center'
-    }}
-  >
-    <div style={{
-      backgroundColor: 'white', padding: '20px', borderRadius: '8px',
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', width: '80%', maxWidth: '500px'
-    }}>
-      <h3>Resultados Guardados para el Artista</h3>
-      <button onClick={() => setShowModal(false)}>Cerrar</button>
+ <div
+  id="modal-background"
+  onClick={handleOutsideClick}
+  style={{
+    position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center'
+  }}
+>
+  <div style={{
+    backgroundColor: 'white', padding: '20px', borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', width: '80%', maxWidth: '500px',
+    maxHeight: '50vh', overflowY: 'auto' // Limitar la altura y habilitar el scroll interno
+  }}>
+    <h3>Resultados Guardados para el Artista</h3>
+    <button onClick={() => setShowModal(false)}>Cerrar</button>
 
-      {/* Verificar si hay resultados; si no, mostrar un mensaje */}
-      {artistResults.length === 0 ? (
-        <p>No tenemos nada almacenado aún de este artista</p>
-      ) : (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {artistResults.map(result => (
-            <li key={result.id} style={{ margin: '10px 0', borderBottom: '1px solid #ccc' }}>
-              <p>Fecha de Creación: {new Date(result.created_at).toLocaleString()}</p>
-              <p>Artista: {result.artist_name}</p>
-              <p>Título: {result.title}</p>
-              <p>Tipo: {result.type}</p>
-              <p>Fecha de Lanzamiento: {result.release_date}</p>
-              <a href={result.url} target="_blank" rel="noopener noreferrer">Ver en Spotify</a>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    {/* Verificar si hay resultados; si no, mostrar un mensaje */}
+    {artistResults.length === 0 ? (
+      <p>No tenemos nada almacenado aún de este artista</p>
+    ) : (
+      <ul style={{ listStyle: 'none', padding: 0 }}>
+        {artistResults.map(result => (
+          <li key={result.id} style={{ margin: '10px 0', borderBottom: '1px solid #ccc' }}>
+            <p>Fecha de Creación: {new Date(result.created_at).toLocaleString()}</p>
+            <p>Artista: {result.artist_name}</p>
+            <p>Título: {result.title}</p>
+            <p>Tipo: {result.type}</p>
+            <p>Fecha de Lanzamiento: {result.release_date}</p>
+            <a href={result.url} target="_blank" rel="noopener noreferrer">Ver en Spotify</a>
+          </li>
+        ))}
+      </ul>
+    )}
   </div>
+</div>
       )}
     </div>
   );
